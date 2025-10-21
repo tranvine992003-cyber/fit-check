@@ -35,12 +35,12 @@ const Footer: React.FC<FooterProps> = ({ isOnDressingScreen = false }) => {
         <p>
           Created by{' '}
           <a 
-            href="https://x.com/ammaar" 
+            href="https://zalo.me/0344396798" 
             target="_blank" 
             rel="noopener noreferrer"
             className="font-semibold text-gray-800 hover:underline"
           >
-            @ammaar
+            Huy Quang
           </a>
         </p>
         <div className="h-4 mt-1 sm:mt-0 flex items-center overflow-hidden">
