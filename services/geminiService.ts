@@ -56,7 +56,7 @@ const handleApiResponse = (response: GenerateContentResponse): string => {
 };
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
-const model = 'gemini-2.5-flash-image';
+const model = 'gemini-1.5-flash';
 
 export const generateModelImage = async (userImage: File): Promise<string> => {
     const userImagePart = await fileToPart(userImage);
