@@ -226,7 +226,7 @@ const App: React.FC = () => {
         {currentView === 'profile' ? (
           <motion.div
             key="profile-screen"
-            className="w-screen min-h-screen flex items-start sm:items-center justify-center bg-gray-50 p-4 pb-20"
+            className="w-full min-h-screen flex items-start sm:items-center justify-center bg-gray-50 p-4 pb-20 overflow-x-hidden"
             variants={viewVariants}
             initial="initial"
             animate="animate"
@@ -238,7 +238,7 @@ const App: React.FC = () => {
         ) : !modelImageUrl ? (
           <motion.div
             key="start-screen"
-            className="w-screen min-h-screen flex items-start sm:items-center justify-center bg-gray-50 p-4 pb-20"
+            className="w-full min-h-screen flex items-start sm:items-center justify-center bg-gray-50 p-4 pb-20 overflow-x-hidden"
             variants={viewVariants}
             initial="initial"
             animate="animate"

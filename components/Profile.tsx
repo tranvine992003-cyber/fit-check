@@ -75,31 +75,31 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
 
   return (
     <motion.div
-      className="w-screen min-h-screen flex items-start sm:items-center justify-center bg-gray-50 p-4 pb-20"
+      className="w-full min-h-screen flex items-start sm:items-center justify-center bg-gray-50 p-4 pb-20"
       variants={viewVariants}
       initial="initial"
       animate="animate"
       exit="exit"
       transition={{ duration: 0.5, ease: 'easeInOut' }}
     >
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <button
             onClick={onBack}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
             aria-label="Go back"
           >
             <ArrowLeftIcon className="w-5 h-5 text-gray-600" />
           </button>
-          <ShirtIcon className="w-6 h-6 text-gray-700" />
-          <h1 className="text-2xl font-serif tracking-widest text-gray-800">
+          <ShirtIcon className="w-6 h-6 text-gray-700 flex-shrink-0" />
+          <h1 className="text-xl sm:text-2xl font-serif tracking-widest text-gray-800 truncate">
             Profile Settings
           </h1>
         </div>
 
         {/* Profile Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200/60 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200/60 p-4 sm:p-6">
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-gray-800 mb-2">
               API Configuration
@@ -138,7 +138,7 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
             )}
 
             {/* Action Buttons */}
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={handleSaveApiKey}
                 disabled={isValidating || !apiKey.trim()}
@@ -150,7 +150,7 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
               {apiKey && (
                 <button
                   onClick={handleClearApiKey}
-                  className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-200"
+                  className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-200 sm:flex-shrink-0"
                 >
                   Clear
                 </button>
@@ -164,7 +164,7 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
               How to get your API key:
             </h3>
             <ol className="text-xs text-gray-600 space-y-1 list-decimal list-inside">
-              <li>Visit <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Google AI Studio</a></li>
+              <li>Visit <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">Google AI Studio</a></li>
               <li>Sign in with your Google account</li>
               <li>Click "Create API Key"</li>
               <li>Copy the generated key and paste it above</li>
@@ -175,8 +175,8 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
         {/* Status Indicator */}
         {isValid && (
           <div className="mt-4 flex items-center justify-center gap-2 text-sm text-green-600">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span>API key configured successfully</span>
+            <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+            <span className="text-center">API key configured successfully</span>
           </div>
         )}
       </div>

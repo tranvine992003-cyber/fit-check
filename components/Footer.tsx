@@ -6,12 +6,12 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const REMIX_SUGGESTIONS = [
-  "💡 Try different poses to see how outfits look from various angles.",
-  "👔 Mix and match different clothing items to create unique styles.",
-  "📸 Save your favorite outfit combinations for future reference.",
-  "🎨 Experiment with different colors and patterns on the same garment.",
-  "👗 Try layering multiple clothing items for complex outfit combinations.",
-  "🌟 Share your virtual try-on results with friends and family.",
+  "💡 Try different poses to see outfits from various angles.",
+  "👔 Mix and match clothing items to create unique styles.",
+  "📸 Save your favorite outfit combinations for later.",
+  "🎨 Experiment with different colors and patterns.",
+  "👗 Try layering multiple clothing items together.",
+  "🌟 Share your virtual try-on results with friends.",
 ];
 
 interface FooterProps {
