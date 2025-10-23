@@ -75,14 +75,14 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
 
   return (
     <motion.div
-      className="w-full min-h-screen flex items-start sm:items-center justify-center bg-gray-50 p-4 pb-20"
+      className="w-full min-h-screen flex items-start sm:items-center justify-center bg-gray-50 p-4 pb-20 overflow-x-hidden"
       variants={viewVariants}
       initial="initial"
       animate="animate"
       exit="exit"
       transition={{ duration: 0.5, ease: 'easeInOut' }}
     >
-      <div className="w-full max-w-md mx-auto">
+      <div className="w-full max-w-md mx-auto overflow-x-hidden">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <button
@@ -99,7 +99,7 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
         </div>
 
         {/* Profile Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200/60 p-4 sm:p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200/60 p-4 sm:p-6 overflow-x-hidden">
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-gray-800 mb-2">
               API Configuration
@@ -159,7 +159,7 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
           </div>
 
           {/* Help Text */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg overflow-x-hidden">
             <h3 className="text-sm font-medium text-gray-700 mb-2">
               How to get your API key:
             </h3>
