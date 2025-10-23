@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UploadCloudIcon } from './icons';
 import { Compare } from './ui/compare';
@@ -13,13 +13,48 @@ import { getFriendlyErrorMessage } from '../lib/utils';
 
 interface StartScreenProps {
   onModelFinalized: (modelUrl: string) => void;
+  onGoToProfile: () => void;
 }
 
-const StartScreen: React.FC<StartScreenProps> = ({ onModelFinalized }) => {
+const StartScreen: React.FC<StartScreenProps> = ({ onModelFinalized, onGoToProfile }) => {
   const [userImageUrl, setUserImageUrl] = useState<string | null>(null);
   const [generatedModelUrl, setGeneratedModelUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [apiKeyConfigured, setApiKeyConfigured] = useState(false);
+
+  // Check if API key is configured
+  const hasApiKey = () => {
+    return !!(localStorage.getItem('GEMINI_API_KEY') || (window as any).GEMINI_API_KEY);
+  };
+
+  // Listen for API key changes
+  useEffect(() => {
+    const checkApiKey = () => {
+      setApiKeyConfigured(hasApiKey());
+    };
+    
+    checkApiKey();
+    
+    // Listen for storage changes
+    const handleStorageChange = () => {
+      checkApiKey();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also listen for custom events when API key is set via window object
+    const handleApiKeyChange = () => {
+      checkApiKey();
+    };
+    
+    window.addEventListener('apiKeyChanged', handleApiKeyChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('apiKeyChanged', handleApiKeyChange);
+    };
+  }, []);
 
   const handleFileSelect = useCallback(async (file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -88,13 +123,39 @@ const StartScreen: React.FC<StartScreenProps> = ({ onModelFinalized }) => {
               </p>
               <hr className="my-8 border-gray-200" />
               <div className="flex flex-col items-center lg:items-start w-full gap-3">
-                <label htmlFor="image-upload-start" className="w-full relative flex items-center justify-center px-8 py-3 text-base font-semibold text-white bg-gray-900 rounded-md cursor-pointer group hover:bg-gray-700 transition-colors">
-                  <UploadCloudIcon className="w-5 h-5 mr-3" />
-                  Upload Photo
-                </label>
-                <input id="image-upload-start" type="file" className="hidden" accept="image/png, image/jpeg, image/webp, image/avif, image/heic, image/heif" onChange={handleFileChange} />
-                <p className="text-gray-500 text-sm">Select a clear, full-body photo. Face-only photos also work, but full-body is preferred for best results.</p>
-                <p className="text-gray-500 text-xs mt-1">By uploading, you agree not to create harmful, explicit, or unlawful content. This service is for creative and responsible use only.</p>
+                {apiKeyConfigured ? (
+                  <>
+                    <label htmlFor="image-upload-start" className="w-full relative flex items-center justify-center px-8 py-3 text-base font-semibold text-white bg-gray-900 rounded-md cursor-pointer group hover:bg-gray-700 transition-colors">
+                      <UploadCloudIcon className="w-5 h-5 mr-3" />
+                      Upload Photo
+                    </label>
+                    <input id="image-upload-start" type="file" className="hidden" accept="image/png, image/jpeg, image/webp, image/avif, image/heic, image/heif" onChange={handleFileChange} />
+                    <p className="text-gray-500 text-sm">Select a clear, full-body photo. Face-only photos also work, but full-body is preferred for best results.</p>
+                    <p className="text-gray-500 text-xs mt-1">By uploading, you agree not to create harmful, explicit, or unlawful content. This service is for creative and responsible use only.</p>
+                  </>
+                ) : (
+                  <div className="w-full p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <div>
+                        <p className="text-yellow-800 font-medium text-sm">API Key Required</p>
+                        <p className="text-yellow-700 text-sm mt-1">Please configure your Gemini API key in Profile Settings to start using the virtual try-on feature.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                <button 
+                  onClick={onGoToProfile}
+                  className={`w-full px-8 py-3 text-base font-semibold rounded-md cursor-pointer transition-colors ${
+                    apiKeyConfigured 
+                      ? 'text-gray-700 bg-gray-100 hover:bg-gray-200' 
+                      : 'text-white bg-blue-600 hover:bg-blue-700'
+                  }`}
+                >
+                  {apiKeyConfigured ? 'Profile Settings' : 'Configure API Key'}
+                </button>
+                
                 {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
               </div>
             </div>

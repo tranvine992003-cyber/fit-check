@@ -9,6 +9,7 @@ import StartScreen from './components/StartScreen';
 import Canvas from './components/Canvas';
 import WardrobePanel from './components/WardrobeModal';
 import OutfitStack from './components/OutfitStack';
+import Profile from './components/Profile';
 import { generateVirtualTryOnImage, generatePoseVariation } from './services/geminiService';
 import { OutfitLayer, WardrobeItem } from './types';
 import { ChevronDownIcon, ChevronUpIcon } from './components/icons';
@@ -51,7 +52,10 @@ const useMediaQuery = (query: string): boolean => {
 };
 
 
+type AppView = 'start' | 'main' | 'profile';
+
 const App: React.FC = () => {
+  const [currentView, setCurrentView] = useState<AppView>('start');
   const [modelImageUrl, setModelImageUrl] = useState<string | null>(null);
   const [outfitHistory, setOutfitHistory] = useState<OutfitLayer[]>([]);
   const [currentOutfitIndex, setCurrentOutfitIndex] = useState(0);
@@ -61,6 +65,7 @@ const App: React.FC = () => {
   const [currentPoseIndex, setCurrentPoseIndex] = useState(0);
   const [isSheetCollapsed, setIsSheetCollapsed] = useState(false);
   const [wardrobe, setWardrobe] = useState<WardrobeItem[]>(defaultWardrobe);
+  const [refreshKey, setRefreshKey] = useState(0);
   const isMobile = useMediaQuery('(max-width: 767px)');
 
   const activeOutfitLayers = useMemo(() => 
@@ -97,6 +102,7 @@ const App: React.FC = () => {
       poseImages: { [POSE_INSTRUCTIONS[0]]: url }
     }]);
     setCurrentOutfitIndex(0);
+    setCurrentView('main');
   };
 
   const handleStartOver = () => {
@@ -109,6 +115,7 @@ const App: React.FC = () => {
     setCurrentPoseIndex(0);
     setIsSheetCollapsed(false);
     setWardrobe(defaultWardrobe);
+    setCurrentView('start');
   };
 
   const handleGarmentSelect = useCallback(async (garmentFile: File, garmentInfo: WardrobeItem) => {
@@ -190,7 +197,7 @@ const App: React.FC = () => {
     setCurrentPoseIndex(newIndex);
 
     try {
-      const newImageUrl = await generatePoseVariation(baseImageForPoseChange, poseInstruction);
+      const newImageUrl = await generatePoseVariation(baseImageForPoseChange as string, poseInstruction);
       setOutfitHistory(prevHistory => {
         const newHistory = [...prevHistory];
         const updatedLayer = newHistory[currentOutfitIndex];
@@ -216,7 +223,19 @@ const App: React.FC = () => {
   return (
     <div className="font-sans">
       <AnimatePresence mode="wait">
-        {!modelImageUrl ? (
+        {currentView === 'profile' ? (
+          <motion.div
+            key="profile-screen"
+            className="w-screen min-h-screen flex items-start sm:items-center justify-center bg-gray-50 p-4 pb-20"
+            variants={viewVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+          >
+            <Profile onBack={() => { setCurrentView('start'); setRefreshKey(prev => prev + 1); }} />
+          </motion.div>
+        ) : !modelImageUrl ? (
           <motion.div
             key="start-screen"
             className="w-screen min-h-screen flex items-start sm:items-center justify-center bg-gray-50 p-4 pb-20"
@@ -226,7 +245,7 @@ const App: React.FC = () => {
             exit="exit"
             transition={{ duration: 0.5, ease: 'easeInOut' }}
           >
-            <StartScreen onModelFinalized={handleModelFinalized} />
+            <StartScreen key={refreshKey} onModelFinalized={handleModelFinalized} onGoToProfile={() => setCurrentView('profile')} />
           </motion.div>
         ) : (
           <motion.div
@@ -249,6 +268,7 @@ const App: React.FC = () => {
                   poseInstructions={POSE_INSTRUCTIONS}
                   currentPoseIndex={currentPoseIndex}
                   availablePoseKeys={availablePoseKeys}
+                  onGoToProfile={() => setCurrentView('profile')}
                 />
               </div>
 
@@ -301,7 +321,7 @@ const App: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      <Footer isOnDressingScreen={!!modelImageUrl} />
+      <Footer isOnDressingScreen={!!modelImageUrl} onGoToProfile={() => setCurrentView('profile')} />
     </div>
   );
 };

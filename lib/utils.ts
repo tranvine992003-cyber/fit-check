@@ -19,6 +19,23 @@ export function getFriendlyErrorMessage(error: unknown, context: string): string
         rawMessage = String(error);
     }
 
+    // Check for quota exceeded error from Gemini API
+    if (rawMessage.includes("quota") || rawMessage.includes("RESOURCE_EXHAUSTED") || rawMessage.includes("429")) {
+        try {
+            // Try to parse JSON error response
+            const errorJson = JSON.parse(rawMessage);
+            const errorMessage = errorJson?.error?.message;
+            if (errorMessage && (errorMessage.includes("quota") || errorMessage.includes("exceeded"))) {
+                return "API quota exceeded. You've reached your daily limit for free tier. Please try again tomorrow or upgrade your Google AI Studio plan.";
+            }
+        } catch (e) {
+            // Not a JSON string, check for quota keywords in raw message
+            if (rawMessage.includes("quota") || rawMessage.includes("exceeded") || rawMessage.includes("limit")) {
+                return "API quota exceeded. You've reached your daily limit for free tier. Please try again tomorrow or upgrade your Google AI Studio plan.";
+            }
+        }
+    }
+
     // Check for specific unsupported MIME type error from Gemini API
     if (rawMessage.includes("Unsupported MIME type")) {
         try {

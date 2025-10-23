@@ -16,9 +16,10 @@ interface CanvasProps {
   poseInstructions: string[];
   currentPoseIndex: number;
   availablePoseKeys: string[];
+  onGoToProfile: () => void;
 }
 
-const Canvas: React.FC<CanvasProps> = ({ displayImageUrl, onStartOver, isLoading, loadingMessage, onSelectPose, poseInstructions, currentPoseIndex, availablePoseKeys }) => {
+const Canvas: React.FC<CanvasProps> = ({ displayImageUrl, onStartOver, isLoading, loadingMessage, onSelectPose, poseInstructions, currentPoseIndex, availablePoseKeys, onGoToProfile }) => {
   const [isPoseMenuOpen, setIsPoseMenuOpen] = useState(false);
   
   const handlePreviousPose = () => {
@@ -78,6 +79,14 @@ const Canvas: React.FC<CanvasProps> = ({ displayImageUrl, onStartOver, isLoading
       >
           <RotateCcwIcon className="w-4 h-4 mr-2" />
           Start Over
+      </button>
+
+      {/* Profile Button */}
+      <button 
+          onClick={onGoToProfile}
+          className="absolute top-4 right-4 z-30 flex items-center justify-center text-center bg-white/60 border border-gray-300/80 text-gray-700 font-semibold py-2 px-4 rounded-full transition-all duration-200 ease-in-out hover:bg-white hover:border-gray-400 active:scale-95 text-sm backdrop-blur-sm"
+      >
+          Profile
       </button>
 
       {/* Image Display or Placeholder */}

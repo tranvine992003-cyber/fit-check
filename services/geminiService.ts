@@ -55,26 +55,53 @@ const handleApiResponse = (response: GenerateContentResponse): string => {
     throw new Error(errorMessage);
 };
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
-const model = 'gemini-1.5-flash';
+const getApiKey = (): string => {
+  // First try to get from window object (set by Profile component)
+  if ((window as any).GEMINI_API_KEY) {
+    return (window as any).GEMINI_API_KEY;
+  }
+  
+  // Then try localStorage
+  const savedApiKey = localStorage.getItem('GEMINI_API_KEY');
+  if (savedApiKey) {
+    return savedApiKey;
+  }
+  
+  // Fallback to environment variable
+  if (process.env.API_KEY) {
+    return process.env.API_KEY;
+  }
+  
+  throw new Error('Gemini API key not found. Please configure your API key in the Profile settings.');
+};
+
+const getAI = () => new GoogleGenAI({ apiKey: getApiKey() });
+const model = 'gemini-2.5-flash-image';
 
 export const generateModelImage = async (userImage: File): Promise<string> => {
-    const userImagePart = await fileToPart(userImage);
-    const prompt = "You are an expert fashion photographer AI. Transform the person in this image into a full-body fashion model photo suitable for an e-commerce website. The background must be a clean, neutral studio backdrop (light gray, #f0f0f0). The person should have a neutral, professional model expression. Preserve the person's identity, unique features, and body type, but place them in a standard, relaxed standing model pose. The final image must be photorealistic. Return ONLY the final image.";
-    const response = await ai.models.generateContent({
-        model,
-        contents: { parts: [userImagePart, { text: prompt }] },
-        config: {
-            responseModalities: [Modality.IMAGE, Modality.TEXT],
-        },
-    });
-    return handleApiResponse(response);
+    try {
+        const userImagePart = await fileToPart(userImage);
+        const prompt = "You are an expert fashion photographer AI. Transform the person in this image into a full-body fashion model photo suitable for an e-commerce website. The background must be a clean, neutral studio backdrop (light gray, #f0f0f0). The person should have a neutral, professional model expression. Preserve the person's identity, unique features, and body type, but place them in a standard, relaxed standing model pose. The final image must be photorealistic. Return ONLY the final image.";
+        const ai = getAI();
+        const response = await ai.models.generateContent({
+            model,
+            contents: { parts: [userImagePart, { text: prompt }] },
+            config: {
+                responseModalities: [Modality.IMAGE, Modality.TEXT],
+            },
+        });
+        return handleApiResponse(response);
+    } catch (error) {
+        // Re-throw the error to be handled by the UI
+        throw error;
+    }
 };
 
 export const generateVirtualTryOnImage = async (modelImageUrl: string, garmentImage: File): Promise<string> => {
-    const modelImagePart = dataUrlToPart(modelImageUrl);
-    const garmentImagePart = await fileToPart(garmentImage);
-    const prompt = `You are an expert virtual try-on AI. You will be given a 'model image' and a 'garment image'. Your task is to create a new photorealistic image where the person from the 'model image' is wearing the clothing from the 'garment image'.
+    try {
+        const modelImagePart = dataUrlToPart(modelImageUrl);
+        const garmentImagePart = await fileToPart(garmentImage);
+        const prompt = `You are an expert virtual try-on AI. You will be given a 'model image' and a 'garment image'. Your task is to create a new photorealistic image where the person from the 'model image' is wearing the clothing from the 'garment image'.
 
 **Crucial Rules:**
 1.  **Complete Garment Replacement:** You MUST completely REMOVE and REPLACE the clothing item worn by the person in the 'model image' with the new garment. No part of the original clothing (e.g., collars, sleeves, patterns) should be visible in the final image.
@@ -82,25 +109,36 @@ export const generateVirtualTryOnImage = async (modelImageUrl: string, garmentIm
 3.  **Preserve the Background:** The entire background from the 'model image' MUST be preserved perfectly.
 4.  **Apply the Garment:** Realistically fit the new garment onto the person. It should adapt to their pose with natural folds, shadows, and lighting consistent with the original scene.
 5.  **Output:** Return ONLY the final, edited image. Do not include any text.`;
-    const response = await ai.models.generateContent({
-        model,
-        contents: { parts: [modelImagePart, garmentImagePart, { text: prompt }] },
-        config: {
-            responseModalities: [Modality.IMAGE, Modality.TEXT],
-        },
-    });
-    return handleApiResponse(response);
+        const ai = getAI();
+        const response = await ai.models.generateContent({
+            model,
+            contents: { parts: [modelImagePart, garmentImagePart, { text: prompt }] },
+            config: {
+                responseModalities: [Modality.IMAGE, Modality.TEXT],
+            },
+        });
+        return handleApiResponse(response);
+    } catch (error) {
+        // Re-throw the error to be handled by the UI
+        throw error;
+    }
 };
 
 export const generatePoseVariation = async (tryOnImageUrl: string, poseInstruction: string): Promise<string> => {
-    const tryOnImagePart = dataUrlToPart(tryOnImageUrl);
-    const prompt = `You are an expert fashion photographer AI. Take this image and regenerate it from a different perspective. The person, clothing, and background style must remain identical. The new perspective should be: "${poseInstruction}". Return ONLY the final image.`;
-    const response = await ai.models.generateContent({
-        model,
-        contents: { parts: [tryOnImagePart, { text: prompt }] },
-        config: {
-            responseModalities: [Modality.IMAGE, Modality.TEXT],
-        },
-    });
-    return handleApiResponse(response);
+    try {
+        const tryOnImagePart = dataUrlToPart(tryOnImageUrl);
+        const prompt = `You are an expert fashion photographer AI. Take this image and regenerate it from a different perspective. The person, clothing, and background style must remain identical. The new perspective should be: "${poseInstruction}". Return ONLY the final image.`;
+        const ai = getAI();
+        const response = await ai.models.generateContent({
+            model,
+            contents: { parts: [tryOnImagePart, { text: prompt }] },
+            config: {
+                responseModalities: [Modality.IMAGE, Modality.TEXT],
+            },
+        });
+        return handleApiResponse(response);
+    } catch (error) {
+        // Re-throw the error to be handled by the UI
+        throw error;
+    }
 };

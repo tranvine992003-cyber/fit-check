@@ -16,9 +16,10 @@ const REMIX_SUGGESTIONS = [
 
 interface FooterProps {
   isOnDressingScreen?: boolean;
+  onGoToProfile?: () => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ isOnDressingScreen = false }) => {
+const Footer: React.FC<FooterProps> = ({ isOnDressingScreen = false, onGoToProfile }) => {
   const [suggestionIndex, setSuggestionIndex] = useState(0);
 
   useEffect(() => {
@@ -32,17 +33,27 @@ const Footer: React.FC<FooterProps> = ({ isOnDressingScreen = false }) => {
   return (
     <footer className={`fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-gray-200/60 p-3 z-50 ${isOnDressingScreen ? 'hidden sm:block' : ''}`}>
       <div className="mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-gray-600 max-w-7xl px-4">
-        <p>
-          Created by{' '}
-          <a 
-            href="https://zalo.me/0344396798" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="font-semibold text-gray-800 hover:underline"
-          >
-            Huy Quang
-          </a>
-        </p>
+        <div className="flex items-center gap-4">
+          <p>
+            Created by{' '}
+            <a 
+              href="https://zalo.me/0344396798" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="font-semibold text-gray-800 hover:underline"
+            >
+              Huy Quang
+            </a>
+          </p>
+          {onGoToProfile && (
+            <button 
+              onClick={onGoToProfile}
+              className="text-gray-600 hover:text-gray-800 font-medium hover:underline"
+            >
+              Profile Settings
+            </button>
+          )}
+        </div>
         <div className="h-4 mt-1 sm:mt-0 flex items-center overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.p
