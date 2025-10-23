@@ -6,12 +6,12 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const REMIX_SUGGESTIONS = [
-  "Remix idea: Generate a shareable lookbook.",
-  "Remix idea: Integrate an e-commerce API to find similar items.",
-  "Remix idea: Add accessories like hats, sunglasses, or bags.",
-  "Remix idea: Create a 'style score' for outfits.",
-  "Remix idea: Let users save their favorite outfits.",
-  "Remix idea: Generate different colorways for garments.",
+  "💡 Try different poses to see how outfits look from various angles.",
+  "👔 Mix and match different clothing items to create unique styles.",
+  "📸 Save your favorite outfit combinations for future reference.",
+  "🎨 Experiment with different colors and patterns on the same garment.",
+  "👗 Try layering multiple clothing items for complex outfit combinations.",
+  "🌟 Share your virtual try-on results with friends and family.",
 ];
 
 interface FooterProps {
